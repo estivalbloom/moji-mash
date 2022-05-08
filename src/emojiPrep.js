@@ -26,7 +26,7 @@ function writeCallback(err) {
 }
 
 function dirPath(name) {
-    return `${__dirname}../emoji/${name}`
+    return `${__dirname}/../emoji/${name}`
 }
 
 function svgPath(name) {

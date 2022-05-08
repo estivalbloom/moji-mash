@@ -7,6 +7,9 @@ import { createInterface } from 'readline';
 import { promisify } from 'util';
 import { splitPaths, tagElements, generateAtlas, combinePaths } from './svgHelper';
 import cfg from '../config.json' assert { type: 'json' };
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const { twemojiURL } = cfg;
 

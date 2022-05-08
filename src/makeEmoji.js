@@ -3,6 +3,9 @@ import Canvas from 'canvas';
 import { extractImages } from './svgHelper.js';
 import { select } from './randomHelper.js';
 import cfg from '../config.json' assert { type: 'json' };
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const { baseImgSize } = cfg;
 

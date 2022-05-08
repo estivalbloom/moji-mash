@@ -1,0 +1,19 @@
+{
+  "name": "moji-mash",
+  "version": "1.0.0",
+  "description": "A tool for remixing svg emojis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Niosi",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "@svgdotjs/svg.js": "^3.1.2",
+    "canvas": "^2.9.1",
+    "jsdom": "^19.0.0",
+    "node-fetch": "^3.2.4",
+    "yargs": "^17.4.1"
+  },
+  "type": "module"
+}

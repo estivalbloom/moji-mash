@@ -11,7 +11,7 @@ const special = String.fromCodePoint(0xfe0f);
 const zwj = String.fromCodePoint(0x200d);
 
 const emojiList = [];
-const emojiNames = fs.readdirSync('../emoji');
+const emojiNames = fs.readdirSync(`${__dirname}../emoji`);
 
 const charToNameMap = {};
 const nameToCharMap = {};
@@ -26,7 +26,7 @@ async function init() {
         await prev;
         const emojiCfg = (await import(`../emoji/${name}/cfg.json`, { assert: { type: "json" } })).default;
         if (!emojiCfg.parts.base) { return; } // TODO: REMOVE
-        const svg = fs.readFileSync(`../emoji/${name}/emoji.svg`).toString();
+        const svg = fs.readFileSync(`${__dirname}../emoji/${name}/emoji.svg`).toString();
         const cfgWithImages = await extractImages(svg, emojiCfg)
         const codePoints = emojiCfg.id
             .split('-')

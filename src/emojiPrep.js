@@ -23,7 +23,7 @@ function writeCallback(err) {
 }
 
 function dirPath(name) {
-    return `./emoji/${name}`
+    return `../emoji/${name}`
 }
 
 function svgPath(name) {

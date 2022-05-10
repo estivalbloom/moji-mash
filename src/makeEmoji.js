@@ -85,7 +85,7 @@ function makeEmoji(size, ...partStrings) {
     return { canvas: canvas, list: outString };
 }
 
-function makeSvgEmoji(...partStrings) {
+function makeSvgEmoji(size, ...partStrings) {
     let svg = '';
     const parts = partStrings.map(p => {
         const [emojiName, partName] = p.split(':');
@@ -106,7 +106,7 @@ function makeSvgEmoji(...partStrings) {
     });
 
     const outString = emojiUsed.join('').replace(trimUscoreRgx, '');
-    return { svg: `<svg>${svg}</svg>`, list: outString };
+    return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">${svg}</svg>`, list: outString };
 }
 
 function emojiStringToPartStringList(input) {
@@ -145,7 +145,7 @@ function randomEmoji(size, svg = false) {
     const emojiString = emojiChars.join('');
     const partStringList = emojiStringToPartStringList(emojiString);
     if (svg) {
-        return makeSvgEmoji(...partStringList);
+        return makeSvgEmoji(size, ...partStringList);
     }
     else {
         return makeEmoji(size, ...partStringList);

@@ -122,7 +122,7 @@ async function extractImages(svgDocument, info) {
             const img = await loadImage(svgBuf);
             img.width = baseImgSize;
             img.height = baseImgSize;
-            info.parts[part][layer] = img;
+            info.parts[part][layer] = { img: img, svg: elems.reduce((prev, cur) => prev + cur.svg(), '') };
             doc.children().forEach(child => child.remove());
         }
     }

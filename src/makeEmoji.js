@@ -74,7 +74,7 @@ function makeEmoji(size, ...partStrings) {
         parts.forEach((part, index) => {
             const { char, partName, emoji } = part;
             if (has(emoji, partName, layer)) {
-                context.drawImage(emoji.parts[partName][layer], 0, 0);
+                context.drawImage(emoji.parts[partName][layer].img, 0, 0);
                 emojiUsed[index] = char;
             }
         });
@@ -83,6 +83,30 @@ function makeEmoji(size, ...partStrings) {
     const outString = emojiUsed.join('').replace(trimUscoreRgx, '');
     context.scale(size / baseImgSize);
     return { canvas: canvas, list: outString };
+}
+
+function makeSvgEmoji(...partStrings) {
+    let svg = '';
+    const parts = partStrings.map(p => {
+        const [emojiName, partName] = p.split(':');
+        const emoji = emojiList[emojiName];
+        const char = nameToChar(emojiName);
+        return { char, partName, emoji };
+    });
+    const emojiUsed = Array(partStrings.length).fill('_');
+
+    layers.forEach(layer => {
+        parts.forEach((part, index) => {
+            const { char, partName, emoji } = part;
+            if (has(emoji, partName, layer)) {
+                svg += emoji.parts[partName][layer].svg;
+                emojiUsed[index] = char;
+            }
+        });
+    });
+
+    const outString = emojiUsed.join('').replace(trimUscoreRgx, '');
+    return { svg: `<svg>${svg}</svg>`, list: outString };
 }
 
 function emojiStringToPartStringList(input) {
@@ -116,11 +140,18 @@ function emojiStringToPartStringList(input) {
     return output
 }
 
-function randomEmoji(size) {
+function randomEmoji(size, svg = false) {
     const emojiChars = select(charList, 4);
     const emojiString = emojiChars.join('');
     const partStringList = emojiStringToPartStringList(emojiString);
-    return makeEmoji(size, ...partStringList);
+    if (svg) {
+        return makeSvgEmoji(...partStringList);
+    }
+    else {
+        return makeEmoji(size, ...partStringList);
+    }
 }
 
-export { init, emojiStringToPartStringList, nameToChar, charToName, makeEmoji, randomEmoji, list };
+await init();
+
+export { emojiStringToPartStringList, nameToChar, charToName, makeEmoji, makeSvgEmoji, randomEmoji, list };

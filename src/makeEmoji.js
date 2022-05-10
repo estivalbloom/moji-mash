@@ -85,7 +85,7 @@ function makeEmoji(size, ...partStrings) {
     return { canvas: canvas, list: outString };
 }
 
-function makeSvgEmoji(size, ...partStrings) {
+function makeSvgEmoji(...partStrings) {
     let svg = '';
     const parts = partStrings.map(p => {
         const [emojiName, partName] = p.split(':');

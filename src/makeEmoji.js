@@ -106,7 +106,7 @@ function makeSvgEmoji(...partStrings) {
     });
 
     const outString = emojiUsed.join('').replace(trimUscoreRgx, '');
-    return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">${svg}</svg>`, list: outString };
+    return { svg: `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 36 36">${svg}</svg>`, list: outString };
 }
 
 function emojiStringToPartStringList(input) {

@@ -37,6 +37,7 @@ async function init() {
         const char = String.fromCodePoint(...codePoints);
         charToNameMap[char] = name;
         nameToCharMap[name] = char;
+        cfgWithImages.svg = svg;
         emojiList[name] = cfgWithImages;
     }, Promise.resolve());
     charList = Object.values(nameToCharMap);
@@ -152,6 +153,16 @@ function randomEmoji(size, svg = false) {
     }
 }
 
+function getData() {
+    return emojiNames.map(e => {
+        return {
+            name: e,
+            char: nameToChar(e),
+            svg: emojiList[e].svg
+        }
+    });
+}
+
 await init();
 
-export { emojiStringToPartStringList, nameToChar, charToName, makeEmoji, makeSvgEmoji, randomEmoji, list };
+export { emojiStringToPartStringList, nameToChar, charToName, makeEmoji, makeSvgEmoji, randomEmoji, list, getData };

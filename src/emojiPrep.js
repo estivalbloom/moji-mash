@@ -1,11 +1,10 @@
 import { mkdirSync, writeFile, readFileSync, readdirSync, writeFileSync } from 'fs';
 import fetch from 'node-fetch';
-import yargs from 'yargs/yargs';
+import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { array } from 'yargs';
 import { createInterface } from 'readline';
 import { promisify } from 'util';
-import { splitPaths, tagElements, generateAtlas, combinePaths } from './svgHelper';
+import { splitPaths, tagElements, generateAtlas, combinePaths } from './svgHelper.js';
 import cfg from '../config.json' assert { type: 'json' };
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -106,7 +105,7 @@ yargs(hideBin(process.argv))
             .positional('names', {
                 describe: 'human-readable emoji names; omit to generate all',
                 default: currentEmojiNames,
-                type: array
+                type: yargs.array
             })
     }, async argv => {
         await argv.names.reduce(async (prev, name) => {

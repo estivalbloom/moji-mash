@@ -116,7 +116,7 @@ function makeSvgEmoji(...partStrings) {
 
 function emojiStringToPartStringList(input) {
     const parts = ['base', 'eyes', 'mouth', 'extra'];
-    const output = [];
+    const choices = [];
     const emojiList = [];
     let failed = false;
 
@@ -143,11 +143,11 @@ function emojiStringToPartStringList(input) {
         const choice = charToName(emoji);
         const part = parts.shift() || 'extra';
         if (choice) {
-            output.push(`${choice}:${part}`);
+            choices.push(`${choice}:${part}`);
         }
     }
 
-    return { output, failed }
+    return { output: choices, failed }
 }
 
 function randomEmoji(size, svg = false) {

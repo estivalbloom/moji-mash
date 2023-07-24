@@ -49,7 +49,7 @@ function charToName(char) {
 }
 
 function hasEmoji(char) {
-    return charToNameMap.has(char)
+    return charToNameMap.includes(char)
 }
 
 function nameToChar(name) {

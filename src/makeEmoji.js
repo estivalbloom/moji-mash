@@ -52,6 +52,10 @@ function nameToChar(name) {
     return nameToCharMap[name];
 }
 
+function hasEmoji(name) {
+    return nameToCharMap.has(name)
+}
+
 function list() {
     return charList.join('');
 }
@@ -61,12 +65,18 @@ function has(emoji, partName, layer) {
 }
 
 function makeEmoji(size, ...partStrings) {
+    let charsFailed = false;
     const canvas = Canvas.createCanvas(baseImgSize, baseImgSize);
     const context = canvas.getContext('2d');
     const parts = partStrings.map(p => {
         const [emojiName, partName] = p.split(':');
         const emoji = emojiList[emojiName];
         const char = nameToChar(emojiName);
+
+        if ( !hasEmoji(emojiName) ) {
+            charsFailed = true;
+        }
+
         return { char, partName, emoji };
     });
     const emojiUsed = Array(partStrings.length).fill('_');
@@ -83,7 +93,7 @@ function makeEmoji(size, ...partStrings) {
 
     const outString = emojiUsed.join('').replace(trimUscoreRgx, '');
     context.scale(size / baseImgSize);
-    return { canvas: canvas, list: outString };
+    return { canvas: canvas, list: outString, failed: charsFailed};
 }
 
 function makeSvgEmoji(...partStrings) {

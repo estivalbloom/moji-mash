@@ -147,7 +147,7 @@ function emojiStringToPartStringList(input) {
         }
     }
 
-    return { output: choices, failed }
+    return { choices, failed }
 }
 
 function randomEmoji(size, svg = false) {

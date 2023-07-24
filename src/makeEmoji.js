@@ -136,7 +136,7 @@ function emojiStringToPartStringList(input) {
     }
 
     for (const emoji of emojiList) {
-        if ( !hasEmoji(emoji) ) {
+        if ( !hasEmoji(emoji) && emoji !== " " && emoji !== "_" ) {
             failed = true;
         }
     

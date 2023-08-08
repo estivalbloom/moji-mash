@@ -153,12 +153,12 @@ function emojiStringToPartStringList(input) {
 function randomEmoji(size, svg = false) {
     const emojiChars = select(charList, 4);
     const emojiString = emojiChars.join('');
-    const partStringList = emojiStringToPartStringList(emojiString).output;
+    const { choices } = emojiStringToPartStringList(emojiString);
     if (svg) {
-        return makeSvgEmoji(...partStringList);
+        return makeSvgEmoji(...choices);
     }
     else {
-        return makeEmoji(size, ...partStringList);
+        return makeEmoji(size, ...choices);
     }
 }
 

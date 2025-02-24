@@ -2,10 +2,12 @@
   "name": "moji-mash",
   "version": "1.0.0",
   "description": "A tool for remixing svg emojis",
+  "main": "./dist/moji-mash.js",
   "module": "./dist/moji-mash.js",
   "exports": {
     ".": {
-      "import": "./dist/moji-mash.js"
+      "import": "./dist/moji-mash.js",
+      "require": "./dist/moji-mash.js"
     }
   },
   "scripts": {
@@ -22,7 +24,9 @@
   "dependencies": {
     "@svgdotjs/svg.js": "^3.2.4",
     "node-fetch": "^3.2.4",
-    "svgdom": "^0.1.20",
+    "svgdom": "^0.1.20"
+  },
+  "devDependencies": {
     "vite": "^6.1.1",
     "yargs": "^17.4.1"
   },

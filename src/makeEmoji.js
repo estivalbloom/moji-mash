@@ -1,17 +1,15 @@
-import fs from 'fs';
 // import Canvas from 'canvas';
 import { extractImages } from './svgHelper.js';
 import { select } from './randomHelper.js';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const emoji_data_resp = await fetch('/emoji/info.json');
+const { emojiNames } = await emoji_data_resp.json();
 
 const trimUscoreRgx = /_*$/;
 const special = String.fromCodePoint(0xfe0f);
 const zwj = String.fromCodePoint(0x200d);
 
 const emojiList = [];
-const emojiNames = fs.readdirSync(`${__dirname}/../emoji`);
 
 const charToNameMap = {};
 const nameToCharMap = {};
@@ -24,11 +22,15 @@ let charList;
 async function init() {
     await emojiNames.reduce(async (prev, name) => {
         await prev;
-        const emojiCfg = (await import(`../emoji/${name}/cfg.json`, { assert: { type: "json" } })).default;
-        if (!emojiCfg.parts.base) { return; } // TODO: REMOVE
-        const svg = fs.readFileSync(`${__dirname}/../emoji/${name}/emoji.svg`).toString();
-        const cfgWithImages = await extractImages(svg, emojiCfg)
-        const codePoints = emojiCfg.id
+        // const emojiCfg = (await import(`../emoji/${name}/cfg.json`, { assert: { type: "json" } })).default;
+		const emoji_cfg_resp = await fetch(`/emoji/${name}/cfg.json`);
+		const emoji_cfg = await emoji_cfg_resp.json();
+        if (!emoji_cfg.parts.base) { return; } // TODO: REMOVE
+        // const svg = fs.readFileSync(`${__dirname}/../emoji/${name}/emoji.svg`).toString();
+		const svg_resp = await fetch(`/emoji/${name}/emoji.svg`);
+		const svg = await svg_resp.text();
+        const cfgWithImages = await extractImages(svg, emoji_cfg)
+        const codePoints = emoji_cfg.id
             .split('-')
             .map(v => parseInt(v, 16));
         const char = String.fromCodePoint(...codePoints);

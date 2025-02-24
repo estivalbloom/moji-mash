@@ -2,12 +2,20 @@
   "name": "moji-mash",
   "version": "1.0.0",
   "description": "A tool for remixing svg emojis",
-  "main": "index.js",
+  "module": "./dist/moji-mash.js",
+  "exports": {
+    ".": {
+      "import": "./dist/moji-mash.js"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "fetch": "node ./src/emojiPrep.js make",
     "parts": "node ./src/emojiPrep.js parts",
-    "atlas": "node ./src/emojiPrep.js atlas"
+    "atlas": "node ./src/emojiPrep.js atlas",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "author": "Justin Niosi",
   "license": "AGPL-3.0-or-later",
@@ -15,9 +23,11 @@
     "@svgdotjs/svg.js": "^3.2.4",
     "node-fetch": "^3.2.4",
     "svgdom": "^0.1.20",
+    "vite": "^6.1.1",
     "yargs": "^17.4.1"
   },
   "type": "module",
+  "files": ["dist"],
   "engines": {
     "node": "20.x"
   }

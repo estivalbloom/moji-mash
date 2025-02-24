@@ -1,11 +1,11 @@
 import { SVG, registerWindow } from '@svgdotjs/svg.js'
-import { createSVGWindow } from 'svgdom';
-import cfg from '../config.json' assert { type: 'json' };
+// import { createSVGWindow } from 'svgdom';
+// import cfg from '../config.json' assert { type: 'json' };
 
-const { atlasImgSize, atlasFontsize } = cfg;
+// const { atlasImgSize, atlasFontsize } = cfg;
 
-const window = createSVGWindow();
-registerWindow(window, window.document);
+// const window = createSVGWindow();
+// registerWindow(window, window.document);
 
 function prep(svgDocument) {
     return SVG().svg(svgDocument).first();

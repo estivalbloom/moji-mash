@@ -4,10 +4,11 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { createInterface } from 'readline';
 import { promisify } from 'util';
-import { splitPaths, tagElements, generateAtlas, combinePaths } from './svgHelper.js';
-import cfg from '../config.json' assert { type: 'json' };
+import { splitPaths, tagElements, generateAtlas, combinePaths } from './src/svgHelper.js';
+import cfg from './config.json' assert { type: 'json' };
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const { twemojiURL } = cfg;
@@ -25,7 +26,7 @@ function writeCallback(err) {
 }
 
 function dirPath(name) {
-    return `${__dirname}/../emoji/${name}`
+    return `${__dirname}/public/emoji/${name}`
 }
 
 function svgPath(name) {
@@ -98,7 +99,14 @@ async function prepAtlas(name) {
     writeFile(atlasPath(name), pngBuffer, writeCallback);
 }
 
-const currentEmojiNames = readdirSync('./emoji').filter(x => !x.includes('.'));
+function generate_info() {
+	const emojiNames = readdirSync("./public/emoji");
+
+	const output = JSON.stringify({ emojiNames });
+	writeFileSync('./public/emoji/info.json', output);
+}
+
+const currentEmojiNames = readdirSync('./public/emoji').filter(x => !x.includes('.'));
 yargs(hideBin(process.argv))
     .command('atlas [...names]', 'generate atlas files for SVGs', yargs => {
         return yargs
@@ -112,8 +120,7 @@ yargs(hideBin(process.argv))
             await prev;
             return prepAtlas(name);
         }, Promise.resolve());
-    }
-    )
+    })
     .command('make <name> <id>', 'fetch and prep files for an emoji', yargs => {
         return yargs
             .positional('name', {
@@ -125,8 +132,7 @@ yargs(hideBin(process.argv))
     }, argv => {
         addAndPrep(argv.id, argv.name);
         makeConfig(argv.id, argv.name);
-    }
-    )
+    })
     .command('parts <name>', 'add parts to an emoji', yargs => {
         return yargs
             .positional('name', {
@@ -134,8 +140,8 @@ yargs(hideBin(process.argv))
             });
     }, argv => {
         promptForParts(argv.name)
-    }
-    ).command('combine <name> <layers...>', 'recombine split paths', yargs => {
+    })
+	.command('combine <name> <layers...>', 'recombine split paths', yargs => {
         return yargs
             .positional('name', {
                 describe: 'human-readable emoji name'
@@ -149,5 +155,6 @@ yargs(hideBin(process.argv))
         const newSvg = await combinePaths(svg, ...argv.layers);
         writeFileSync(path, newSvg);
         prepAtlas(argv.name);
-    }
-    ).parse();
+    })
+	.command('geninfo', 'generate info file', yargs => {}, generate_info)
+	.parse();

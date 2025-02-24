@@ -12,14 +12,13 @@
   "author": "Justin Niosi",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "@svgdotjs/svg.js": "^3.1.2",
-    "canvas": "^2.9.1",
-    "jsdom": "^19.0.0",
+    "@svgdotjs/svg.js": "^3.2.4",
     "node-fetch": "^3.2.4",
+    "svgdom": "^0.1.20",
     "yargs": "^17.4.1"
   },
   "type": "module",
   "engines": {
-    "node": "16.x"
+    "node": "20.x"
   }
 }

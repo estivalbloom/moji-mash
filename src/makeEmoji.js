@@ -1,13 +1,10 @@
 import fs from 'fs';
-import Canvas from 'canvas';
+// import Canvas from 'canvas';
 import { extractImages } from './svgHelper.js';
 import { select } from './randomHelper.js';
-import cfg from '../config.json' assert { type: 'json' };
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-const { baseImgSize } = cfg;
 
 const trimUscoreRgx = /_*$/;
 const special = String.fromCodePoint(0xfe0f);
@@ -62,32 +59,6 @@ function list() {
 
 function has(emoji, partName, layer) {
     return emoji && emoji.parts && emoji.parts[partName] && emoji.parts[partName][layer];
-}
-
-function makeEmoji(size, ...partStrings) {
-    const canvas = Canvas.createCanvas(baseImgSize, baseImgSize);
-    const context = canvas.getContext('2d');
-    const parts = partStrings.map(p => {
-        const [emojiName, partName] = p.split(':');
-        const emoji = emojiList[emojiName];
-        const char = nameToChar(emojiName);
-        return { char, partName, emoji };
-    });
-    const emojiUsed = Array(partStrings.length).fill('_');
-
-    layers.forEach(layer => {
-        parts.forEach((part, index) => {
-            const { char, partName, emoji } = part;
-            if (has(emoji, partName, layer)) {
-                context.drawImage(emoji.parts[partName][layer].img, 0, 0);
-                emojiUsed[index] = char;
-            }
-        });
-    });
-
-    const outString = emojiUsed.join('').replace(trimUscoreRgx, '');
-    context.scale(size / baseImgSize);
-    return { canvas: canvas, list: outString };
 }
 
 function makeSvgEmoji(...partStrings) {
@@ -150,16 +121,11 @@ function emojiStringToPartStringList(input) {
     return { choices, failed }
 }
 
-function randomEmoji(size, svg = false) {
+function randomEmoji() {
     const emojiChars = select(charList, 4);
     const emojiString = emojiChars.join('');
     const { choices } = emojiStringToPartStringList(emojiString);
-    if (svg) {
-        return makeSvgEmoji(...choices);
-    }
-    else {
-        return makeEmoji(size, ...choices);
-    }
+    return makeSvgEmoji(...choices)
 }
 
 function getData() {
@@ -174,4 +140,4 @@ function getData() {
 
 await init();
 
-export { emojiStringToPartStringList, nameToChar, charToName, makeEmoji, makeSvgEmoji, randomEmoji, list, getData };
+export { emojiStringToPartStringList, nameToChar, charToName, makeSvgEmoji, randomEmoji, list, getData };

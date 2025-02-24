@@ -1,17 +1,11 @@
-import { JSDOM } from 'jsdom';
+import { SVG, registerWindow } from '@svgdotjs/svg.js'
+import { createSVGWindow } from 'svgdom';
 import cfg from '../config.json' assert { type: 'json' };
-import Canvas from 'canvas';
 
-const { createCanvas, loadImage } = Canvas;
-const dom = new JSDOM();
-const { atlasImgSize, atlasFontsize, baseImgSize } = cfg;
+const { atlasImgSize, atlasFontsize } = cfg;
 
-globalThis.document = dom.window.document;
-globalThis.window = dom.window;
-
-// Require svg now, because it expects the document/window to already exist
-const svgdotjs = (await import('@svgdotjs/svg.js')).default;
-const { SVG } = svgdotjs;
+const window = createSVGWindow();
+registerWindow(window, window.document);
 
 function prep(svgDocument) {
     return SVG().svg(svgDocument).first();
@@ -54,36 +48,37 @@ function tagElements(svgDocument) {
 }
 
 async function generateAtlas(svgDocument) {
-    const doc = prep(svgDocument);
+    // const doc = prep(svgDocument);
 
-    const children = doc.children().map(child => child.remove());
-    const canvas = createCanvas(atlasImgSize * 2, atlasImgSize * children.length);
-    const context = canvas.getContext('2d');
+    // const children = doc.children().map(child => child.remove());
+    // const canvas = createCanvas(atlasImgSize * 2, atlasImgSize * children.length);
+    // const context = canvas.getContext('2d');
 
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    // context.fillStyle = 'white';
+    // context.fillRect(0, 0, canvas.width, canvas.height);
 
-    context.font = `bold ${atlasFontsize}px sans-serif`;
-    context.fillStyle = 'black';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
+    // context.font = `bold ${atlasFontsize}px sans-serif`;
+    // context.fillStyle = 'black';
+    // context.textAlign = 'center';
+    // context.textBaseline = 'middle';
 
-    await children.reduce(async (prev, child, index) => {
-        await prev;
-        doc.put(child);
+    // await children.reduce(async (prev, child, index) => {
+    //     await prev;
+    //     doc.put(child);
 
-        const svgBuf = Buffer.from(doc.svg());
-        const img = await loadImage(svgBuf);
-        img.width = atlasImgSize;
-        img.height = atlasImgSize;
-        context.drawImage(img, atlasImgSize, index * atlasImgSize, atlasImgSize, atlasImgSize);
-        context.fillText(child.attr('id'), 0.5 * atlasImgSize, (index + 0.5) * atlasImgSize);
+    //     const svgBuf = Buffer.from(doc.svg());
+    //     const img = await loadImage(svgBuf);
+    //     img.width = atlasImgSize;
+    //     img.height = atlasImgSize;
+    //     context.drawImage(img, atlasImgSize, index * atlasImgSize, atlasImgSize, atlasImgSize);
+    //     context.fillText(child.attr('id'), 0.5 * atlasImgSize, (index + 0.5) * atlasImgSize);
 
-        child.remove();
-    }, Promise.resolve());
+    //     child.remove();
+    // }, Promise.resolve());
 
-    clean(doc);
-    return canvas.toBuffer();
+    // clean(doc);
+    // return canvas.toBuffer();
+	throw new Error('generateAtlas not implemented');
 }
 
 async function combinePaths(svgDocument, ...layers) {
@@ -115,19 +110,20 @@ async function extractImages(svgDocument, info) {
             const ids = info.parts[part][layer];
             const elems = ids.map(id => elements[id]);
 
-            elems.forEach(e => {
-                doc.put(e);
-            });
-            const svgBuf = Buffer.from(doc.svg());
-            const img = await loadImage(svgBuf);
-            img.width = baseImgSize;
-            img.height = baseImgSize;
-            info.parts[part][layer] = { img: img, svg: elems.reduce((prev, cur) => prev + cur.svg(), '') };
-            doc.children().forEach(child => child.remove());
+            // elems.forEach(e => {
+            //     doc.put(e);
+            // });
+            // const svgBuf = Buffer.from(doc.svg());
+			// console.log(doc.svg());
+            // const img = await loadImage(svgBuf);
+            // img.width = baseImgSize;
+            // img.height = baseImgSize;
+            info.parts[part][layer] = { img: undefined, svg: elems.reduce((prev, cur) => prev + cur.svg(), '') };
+            // doc.children().forEach(child => child.remove());
         }
     }
 
-    clean(doc);
+    // clean(doc);
     return info;
 }
 

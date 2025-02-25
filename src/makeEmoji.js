@@ -17,7 +17,6 @@ const layers = ['bot', 'mid', 'top']
 let charList;
 
 async function* lazyLoadCfg(cfg) {
-	console.log(`Loading ${cfg.name}`);
 	const svg_url = new URL(`./emoji/${cfg.name}/emoji.svg`, import.meta.url);
 	const svg_resp = await fetch(svg_url);
 	const svg = await svg_resp.text();
@@ -32,7 +31,6 @@ async function* lazyLoadCfg(cfg) {
 async function init() {
     emojiCfg.forEach((cfg) => {
 		const lazyLoader = lazyLoadCfg(cfg);
-		console.log(`${cfg.name} loader initialized`)
 		emojiList[cfg.name] = async () => (await lazyLoader.next()).value;
 		const codePoints = cfg.id
 			.split('-')

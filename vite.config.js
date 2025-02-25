@@ -15,7 +15,7 @@ export default defineConfig({
 			entry: resolve(__dirname, 'src/main.js'),
 			name: 'MojiMash',
 			fileName: 'moji-mash',
-			formats: ['es']
+			formats: ['es'],
 		}
 	}
 })

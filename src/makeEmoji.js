@@ -1,7 +1,7 @@
 // import Canvas from 'canvas';
 import { extractImages } from './svgHelper.js';
 import { select } from './randomHelper.js';
-import { emojiNames, emojiCfg } from './emoji/info.json';
+import { emojiCfg } from './info.json';
 
 const trimUscoreRgx = /_*$/;
 const special = String.fromCodePoint(0xfe0f);
@@ -18,8 +18,7 @@ let charList;
 
 async function* lazyLoadCfg(cfg) {
 	console.log(`Loading ${cfg.name}`);
-	const svg_url = new URL(`./emoji/${cfg.name}/emoji.svg`, import.meta.url);
-	const svg_resp = await fetch(svg_url);
+	const svg_resp = await fetch(`/emoji/${cfg.name}/emoji.svg`);
 	const svg = await svg_resp.text();
 	const cfgWithImages = await extractImages(svg, cfg)
 	cfgWithImages.svg = svg;
@@ -132,16 +131,6 @@ function randomEmoji() {
     return makeSvgEmoji(...choices)
 }
 
-function getData() {
-    return emojiNames.map(e => {
-        return {
-            name: e,
-            char: nameToChar(e),
-            svg: emojiList[e]().svg
-        }
-    });
-}
-
 await init();
 
-export { emojiStringToPartStringList, nameToChar, charToName, makeSvgEmoji, randomEmoji, list, getData };
+export { emojiStringToPartStringList, nameToChar, charToName, makeSvgEmoji, randomEmoji, list };

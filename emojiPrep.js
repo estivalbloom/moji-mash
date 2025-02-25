@@ -101,15 +101,13 @@ async function prepAtlas(name) {
 }
 
 async function generate_info() {
-	const emojiNames = (await fs.readdir("./src/emoji", { withFileTypes: true }))
-		.filter(e => e['isDirectory']())
-		.map(e => e.name);
+	const emojiNames = fs.readdir("./src/emoji")
 	const emojiCfg = await Promise.all(emojiNames.map(async name => {
 		return (await import(cfgPath(name), { assert: { type: 'json' } })).default;
 	}));
 
 	const output = JSON.stringify({ emojiNames, emojiCfg });
-	await fs.writeFile('./src/emoji/info.json', output);
+	await fs.writeFile('./src/info.json', output);
 }
 
 const currentEmojiNames = readdirSync('./src/emoji').filter(x => !x.includes('.'));

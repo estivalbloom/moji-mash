@@ -18,7 +18,8 @@ let charList;
 
 async function* lazyLoadCfg(cfg) {
 	console.log(`Loading ${cfg.name}`);
-	const svg_resp = await fetch(`/emoji/${cfg.name}/emoji.svg`);
+	const svg_url = new URL(`./emoji/${cfg.name}/emoji.svg`, import.meta.url);
+	const svg_resp = await fetch(svg_url);
 	const svg = await svg_resp.text();
 	const cfgWithImages = await extractImages(svg, cfg)
 	cfgWithImages.svg = svg;

@@ -1,7 +1,7 @@
 // import Canvas from 'canvas';
 import { extractImages } from './svgHelper.js';
 import { select } from './randomHelper.js';
-import { emojiNames } from './emoji/info.json';
+import { emojiNames, emojiCfg } from './emoji/info.json';
 
 const trimUscoreRgx = /_*$/;
 const special = String.fromCodePoint(0xfe0f);
@@ -16,29 +16,31 @@ const layers = ['bot', 'mid', 'top']
 
 let charList;
 
+async function* lazyLoadCfg(cfg) {
+	console.log(`Loading ${cfg.name}`);
+	const svg_url = new URL(`./emoji/${cfg.name}/emoji.svg`, import.meta.url);
+	const svg_resp = await fetch(svg_url);
+	const svg = await svg_resp.text();
+	const cfgWithImages = await extractImages(svg, cfg)
+	cfgWithImages.svg = svg;
+	while (true) {
+		yield cfgWithImages;
+	}
+}
+
 // Prepare image map
 async function init() {
-    await emojiNames.reduce(async (prev, name) => {
-        await prev;
-        // const emojiCfg = (await import(`../emoji/${name}/cfg.json`, { assert: { type: "json" } })).default;
-		const cfg_url = new URL(`./emoji/${name}/cfg.json`, import.meta.url);
-		const emoji_cfg_resp = await fetch(cfg_url);
-		const emoji_cfg = await emoji_cfg_resp.json();
-        if (!emoji_cfg.parts.base) { return; } // TODO: REMOVE
-        // const svg = fs.readFileSync(`${__dirname}/../emoji/${name}/emoji.svg`).toString();
-		const svg_url = new URL(`./emoji/${name}/emoji.svg`, import.meta.url);
-		const svg_resp = await fetch(svg_url);
-		const svg = await svg_resp.text();
-        const cfgWithImages = await extractImages(svg, emoji_cfg)
-        const codePoints = emoji_cfg.id
-            .split('-')
-            .map(v => parseInt(v, 16));
-        const char = String.fromCodePoint(...codePoints);
-        charToNameMap[char] = name;
-        nameToCharMap[name] = char;
-        cfgWithImages.svg = svg;
-        emojiList[name] = cfgWithImages;
-    }, Promise.resolve());
+    emojiCfg.forEach((cfg) => {
+		const lazyLoader = lazyLoadCfg(cfg);
+		console.log(`${cfg.name} loader initialized`)
+		emojiList[cfg.name] = async () => (await lazyLoader.next()).value;
+		const codePoints = cfg.id
+			.split('-')
+			.map(v => parseInt(v, 16));
+		const char = String.fromCodePoint(...codePoints);
+		charToNameMap[char] = cfg.name;
+		nameToCharMap[cfg.name] = char;
+    });
     charList = Object.values(nameToCharMap);
     charList.sort().reverse();
 }
@@ -63,14 +65,14 @@ function has(emoji, partName, layer) {
     return emoji && emoji.parts && emoji.parts[partName] && emoji.parts[partName][layer];
 }
 
-function makeSvgEmoji(...partStrings) {
+async function makeSvgEmoji(...partStrings) {
     let svg = '';
-    const parts = partStrings.map(p => {
+    const parts = await Promise.all(partStrings.map(async p => {
         const [emojiName, partName] = p.split(':');
-        const emoji = emojiList[emojiName];
+        const emoji = await emojiList[emojiName]();
         const char = nameToChar(emojiName);
         return { char, partName, emoji };
-    });
+    }));
     const emojiUsed = Array(partStrings.length).fill('_');
 
     layers.forEach(layer => {
@@ -84,31 +86,31 @@ function makeSvgEmoji(...partStrings) {
     });
 
     const outString = emojiUsed.join('').replace(trimUscoreRgx, '');
-    return { svg: `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 36 36">${svg}</svg>`, list: outString };
+    return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">${svg}</svg>`, list: outString };
 }
 
 function emojiStringToPartStringList(input) {
     const parts = ['base', 'eyes', 'mouth', 'extra'];
     const choices = [];
-    const emojiList = [];
+    const emojis = [];
     let failed = false;
 
     let join = false;
     for (let emoji of input) {
         if (emoji === zwj) {
             join = true;
-            emojiList[emojiList.length - 1] += emoji;
+            emojis[emojis.length - 1] += emoji;
         }
         else if (join || (special.indexOf(emoji) >= 0)) {
             join = false;
-            emojiList[emojiList.length - 1] += emoji;
+            emojis[emojis.length - 1] += emoji;
         }
         else {
-            emojiList.push(emoji);
+            emojis.push(emoji);
         }
     }
 
-    for (const emoji of emojiList) {
+    for (const emoji of emojis) {
         if ( !hasEmoji(emoji) && emoji !== " " && emoji !== "_" ) {
             failed = true;
         }
@@ -135,7 +137,7 @@ function getData() {
         return {
             name: e,
             char: nameToChar(e),
-            svg: emojiList[e].svg
+            svg: emojiList[e]().svg
         }
     });
 }

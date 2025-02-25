@@ -8,6 +8,7 @@ import { splitPaths, tagElements, generateAtlas, combinePaths } from './src/svgH
 import cfg from './config.json' assert { type: 'json' };
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import * as fs from 'fs/promises';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -26,7 +27,7 @@ function writeCallback(err) {
 }
 
 function dirPath(name) {
-    return `${__dirname}/public/emoji/${name}`
+    return `${__dirname}/src/emoji/${name}`
 }
 
 function svgPath(name) {
@@ -99,14 +100,19 @@ async function prepAtlas(name) {
     writeFile(atlasPath(name), pngBuffer, writeCallback);
 }
 
-function generate_info() {
-	const emojiNames = readdirSync("./public/emoji");
+async function generate_info() {
+	const emojiNames = (await fs.readdir("./src/emoji", { withFileTypes: true }))
+		.filter(e => e['isDirectory']())
+		.map(e => e.name);
+	const emojiCfg = await Promise.all(emojiNames.map(async name => {
+		return (await import(cfgPath(name), { assert: { type: 'json' } })).default;
+	}));
 
-	const output = JSON.stringify({ emojiNames });
-	writeFileSync('./public/emoji/info.json', output);
+	const output = JSON.stringify({ emojiNames, emojiCfg });
+	await fs.writeFile('./src/emoji/info.json', output);
 }
 
-const currentEmojiNames = readdirSync('./public/emoji').filter(x => !x.includes('.'));
+const currentEmojiNames = readdirSync('./src/emoji').filter(x => !x.includes('.'));
 yargs(hideBin(process.argv))
     .command('atlas [...names]', 'generate atlas files for SVGs', yargs => {
         return yargs

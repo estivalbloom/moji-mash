@@ -17,7 +17,7 @@ import * as moji from '/src/main.js'
 const name = 'mizaru';
 const emojiChar = moji.nameToChar(name);
 const partList = moji.emojiStringToPartStringList(emojiChar.repeat(4));
-const emojiSvg = moji.makeSvgEmoji(...partList.choices);
+const emojiSvg = await moji.makeSvgEmoji(...partList.choices);
 
 document.querySelector('body').innerHTML = emojiSvg.svg;
 </script>

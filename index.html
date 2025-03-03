@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Moji Test</title>
+</head>
+
+<body>
+
+</body>
+
+<script type="module">
+import * as moji from '/src/main.js'
+
+const name = 'mizaru';
+const emojiChar = moji.nameToChar(name);
+const partList = moji.emojiStringToPartStringList(emojiChar.repeat(4));
+const emojiSvg = await moji.makeSvgEmoji(...partList.choices);
+
+document.querySelector('body').innerHTML = emojiSvg.svg;
+</script>
+
+</html>

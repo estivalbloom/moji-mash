@@ -2,6 +2,7 @@
 secret.json
 **/atlas.png
 test.*
+.nvmrc
 
 # Suggested gitignore for Node
 # Logs
